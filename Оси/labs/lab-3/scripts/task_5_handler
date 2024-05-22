@@ -1,0 +1,42 @@
+#!/bin/bash
+
+operation="+"
+result=1
+
+tail -f task_5_file |
+while [[ true ]]
+do
+	read line
+
+	case $line in
+		"QUIT")
+			killall tail
+			echo "exit"
+			exit 0
+		;;
+		"+")
+			operation="+"
+		;;
+		"*")
+			operation="*"
+		;;
+		[0-9]*)
+			case $operation in
+				"+")
+					result=$(echo "$result+$line" | bc)
+					echo "$result"
+				;;
+				"*")
+					result=$(echo "$result*$line" | bc)
+					echo "$result"
+				;;
+			esac
+
+		;;
+		*)
+			killall tail
+			echo "Invalid character"
+			exit 1
+		;;
+	esac
+done

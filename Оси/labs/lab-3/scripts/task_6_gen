@@ -1,0 +1,22 @@
+#!/bin/bash
+
+while [[ true ]]
+do
+	read line
+
+	case "$line" in
+    	"+")
+      		kill -USR1 $(cat .task_6_pid)
+    	;;
+    	"*")
+      		kill -USR2 $(cat .task_6_pid)
+    	;;
+    	"TERM")
+      		kill -TERM $(cat .task_6_pid)
+      		exit 0
+    	;;
+	*)
+		continue
+	;;
+  	esac
+done

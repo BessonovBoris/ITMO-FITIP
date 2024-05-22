@@ -1,0 +1,30 @@
+#!/bin/bash
+
+~/lab-3/scripts/task_4_additionally &
+~/lab-3/scripts/task_4_additionally &
+~/lab-3/scripts/task_4_additionally &
+
+sleep 0.005
+
+Pid1=$(sed -n '1p' ~/.task_4_pids)
+Pid2=$(sed -n '2p' ~/.task_4_pids)
+Pid3=$(sed -n '3p' ~/.task_4_pids)
+
+kill -s SIGKILL "$Pid2"
+kill -s SIGKILL "$Pid3"
+
+rm ~/.task_4_pids
+
+cpulimit -p "$Pid1" -l 10
+
+#while [[ true ]]
+#do
+#	UseCpu=&(ps aux | grep -E "^.* $Pid1( .*)" | awk '{print $3}')
+#
+#	moreThan10=$(echo "$UseCpu > 10.0" | bc)
+#
+#	if [[ "$moreThan10" -eq "1" ]]
+#	then	kill -s SIGSTOP "$Pid1"
+#	else	kill -s SIGCONT "$Pid1"
+#	fi
+#done

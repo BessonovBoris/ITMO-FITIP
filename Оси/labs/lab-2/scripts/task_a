@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ps a x -u user | awk 'NR>1 {printf("%s:%s\n", $1, $5)} END {print(NR-1)}' > file_a

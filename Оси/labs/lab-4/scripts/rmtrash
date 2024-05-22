@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [[ $# -ne 1 ]]
+then
+	echo "Too mach arguments"
+	exit 1
+fi
+
+S="$1"
+LenName=${#S}
+
+Name="$S"
+
+if [[ ! -d ~/.trash ]]
+then mkdir ~/.trash
+fi
+
+Num=$(echo "$S" | awk 'BEGIN {FS="_"} /.*_[0-9]+/ {print $NF}')
+
+LenNum=${#Num}
+
+if [[ "$Num" == "" ]]
+then
+	if [[ ${S:$LenName-1:1} == "_" ]]
+	then Name=${S:0:$LenName-1}
+	fi
+
+	Num=0
+else
+	let LenNum=$LenNum+1
+
+	Name=${S:0:$LenName-$LenNum}
+fi
+
+while [[ -f "$Name"_"$Num" ]]
+do
+	let Num=$Num+1
+done
+
+Name="$Name"_"$Num"
+
+ln "$S" "$Name"
+rm "$S"
+
+Path="$PWD"/"$S"
+
+echo "$Path = $Name" >> ~/.trash.log

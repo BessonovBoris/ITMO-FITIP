@@ -1,0 +1,37 @@
+#!/bin/bash
+
+Arguement="$1"
+
+Names=$(awk -v A=$Arguement -F " = " '$2==A {print $1}' ~/.trash.log)
+
+echo $Names
+
+for line in $Names
+do
+	echo "Untrash $line ?"
+	read input
+
+	restoreDir=$line
+
+	if [[ $input == "y" ]]
+	then
+		Name=$(echo "$restoreDir" | awk -F "/" '{print $NF}')
+		restoreDir=${restoreDir:0:${#restoreDir}-${#Name}}
+
+		if [[ ! -d $restoreDir ]]
+		then
+			restoreDir="~/"
+			echo "File will be restore in home dir"
+		fi
+
+		while [[ -f $restoreDir ]]
+		do
+			read -p "File $restoreDir already exsist. Input new name " Name
+		done
+
+		restoreDir="$restoreDir"$Name
+
+		ln ~/.trash/Arguement $restoreDir
+		rm ~/.trash/Arguement
+	fi
+done

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo $$ >> ~/.task_4_pids
+
+A=1
+B=2
+
+while [[ 1 ]]
+do
+	let C=$A\*$B
+done

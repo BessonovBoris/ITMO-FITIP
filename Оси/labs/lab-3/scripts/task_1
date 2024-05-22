@@ -1,0 +1,8 @@
+#!/bin/bash
+
+Host=www.net_nikogo.ru
+File=$(date '+%F_%T')
+Dir=~/test
+
+mkdir "$Dir" && echo "catalog test was created successfully" > ~/report ; echo > "$Dir/$File"
+ping "$Host" || echo "$(date '+%F_%T') can't ping host $Host" >> ~/report

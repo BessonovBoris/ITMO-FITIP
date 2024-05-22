@@ -1,0 +1,21 @@
+#!/bin/bash
+
+file="file_d"
+PIDs=$(ps a x o pid | tail -n +2)
+
+> "$file"
+
+for i in $PIDs
+do
+	if [[ ! -d "/proc/$i" ]]
+	then continue
+	fi
+
+	PPid=$(cat /proc/$i/status | awk '/PPid/ {print($2)}')
+	NrSwitch=$(cat /proc/$i/sched | awk '/nr_switches/ {print $3}')
+	SumExec=$(cat /proc/$i/sched | awk '/sum_exec_runtime/ {print $3}')
+
+	AvgRun=$(echo "$SumExec/$NrSwitch" | bc -l)
+
+	echo "ProcessID=$i:Parent_ProcessID=$PPid:Average_Running_Time=$AvgRun" >> "$file"
+done | sort -t":" -k 2.18 -r -n > "$file"

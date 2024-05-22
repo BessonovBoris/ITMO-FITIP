@@ -1,0 +1,40 @@
+#!/bin/bash
+
+> file_g
+> temp
+
+for pid in $(ps a x o pid | tail -n +2)
+do
+	bytes=$(cat "/proc/$pid/io" | grep read_bytes | grep -o "[0-9]\+")
+
+	if [[ "$bytes" != "" ]]
+	then
+		echo "$bytes $pid" >> temp
+	fi
+done
+
+sleep 60
+
+for pid in $(ps a x o pid | tail -n +2)
+do
+	while read list
+	do
+		innerPid=$(echo "$list" | awk '{print $2}')
+
+		if [[ "$pid" -ne "$innerPid" ]]
+		then continue
+		fi
+
+		newBytes=$(cat "/proc/$pid/io" | grep read_bytes | grep -o "[0-9]\+")
+		bytes=$(echo "$list" | awk '{print $1}')
+
+		delta=$(echo "$newBytes-$bytes" | bc)
+		echo "$delta $pid" >> file_g
+
+		break
+	done < temp
+done
+
+cat file_g | sort -n -r -k 1 | head -n 3 | awk '{print $1 " : " $2}'
+
+rm temp

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+echo $$ > .task_6_pid
+
+operation=""
+result=1
+
+term()
+{
+	echo "Siganl TERM from other procces"
+	rm -rf .task_6_pid
+	exit 0
+}
+
+usr1()
+{
+	operation="+"
+}
+
+usr2()
+{
+	operation="*"
+}
+
+trap 'usr1' USR1
+trap 'usr2' USR2
+trap 'term' SIGTERM
+
+while [[ true ]]
+do
+	sleep 1
+	echo $result
+
+	case "$operation" in
+    		"+")
+      			result=$(($result + 2))
+    		;;
+    		"*")
+      			result=$(($result * 2))
+    		;;
+  	esac
+done

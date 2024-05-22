@@ -1,0 +1,30 @@
+#!/bin/bash
+
+file="file_d"
+artPpid=0
+count=0
+
+ppid=$(head -n 1 $file | awk -F":" '{print $2}' | awk -F"=" '{print $2}')
+
+while read line
+do
+	currentPpid=$(echo $line | awk -F":" '{print $2}' | awk -F"=" '{print $2}')
+	currentArt=$(echo $line | awk -F":" '{print $3}' | awk -F"=" '{print $2}')
+
+	if [[ $currentPpid == $ppid ]]
+	then
+		count=$((count+1))
+		artPpid=$(echo "$artPpid+$currentArt" | bc -l)
+	else
+		avg=$(echo "$artPpid/$count" | bc -l)
+
+		sed -i "/$line/i Average_Running_Children_of_ParentID=$ppid is $avg" "$file"
+
+		count=1
+		artPpid=$currentArt
+		ppid=$currentPpid
+	fi
+done < "$file"
+
+avg=$(echo "$artPpid/$count" | bc -l)
+echo "Average_Running_Children_of_ParentID=$ppid is $avg" >> "$file"

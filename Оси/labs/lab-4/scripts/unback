@@ -1,0 +1,13 @@
+#!/bin/bash
+
+File=$(ls ~/user | grep -E "^Backup-[0-9]{4}-[0-9]{2}-[0-9]{2}" | sort | tail -n 1)
+
+for line in $(ls "~/user/$File")
+do
+	Past=$(echo "$line" | awk '/.*.[0-9]{2}[0-9]{2}[0-9]{2}/')
+	if [[ $Past != "" ]]
+	then continue
+	fi
+
+	cp "~/user/$File/$line" "~/user/restore"
+done

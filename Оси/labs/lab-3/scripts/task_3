@@ -1,0 +1,6 @@
+#!/bin/bash
+
+CrontabString=&(crontab -l)
+CrontabString="$CrontabString""5 * 23 3 * ~/lab-3/scripts/task_1"
+
+echo "$CrontabString" | crontab

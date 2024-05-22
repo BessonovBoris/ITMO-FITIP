@@ -1,0 +1,207 @@
+db.createCollection("users")
+
+db.createCollection("gym")
+
+db.createCollection("workers")
+
+db.createCollection("tickets")
+
+db.createCollection("sales")
+
+db.users.insertMany([
+	{
+		"ticket_id": null,
+		"phone": 78211231234,
+		"name": "виргилий",
+		"last_payment": null
+	},
+	{
+		"ticket_id": null,
+		"phone": 78212394524,
+		"name": "горацио",
+		"last_payment": null
+	},
+	{
+		"ticket_id": null,
+		"phone": 79212312521,
+		"name": "арсений",
+		"last_payment": null
+	},
+	{
+		"ticket_id": null,
+		"phone": 78211231234,
+		"name": "олег",
+		"last_payment": null
+	},
+	{
+		"ticket_id": null,
+		"phone": 78212394524,
+		"name": "фридрих",
+		"last_payment": null
+	},
+	{
+		"ticket_id": null,
+		"phone": 79212312521,
+		"name": "арсений",
+		"last_payment": null
+	},
+	{
+		"ticket_id": null,
+		"phone": 78245562582,
+		"name": "пигмалион",
+		"last_payment": null
+	},
+	{
+		"ticket_id": null,
+		"phone": 78215756752,
+		"name": "георгий",
+		"last_payment": null
+	},
+	{
+		"_id": { "$oid": "663ac9c7d53562158486fb36" },
+		"ticket_id": null,
+		"phone": 79214573452,
+		"name": "август",
+		"last_payment": null
+	},
+	{
+		"_id": { "$oid": "663ac9d1d53562158486fb38" },
+		"ticket_id": null,
+		"phone": 78223464569,
+		"name": "клеопатра",
+		"last_payment": null
+	}
+])
+
+db.comments.insertMany([
+	{
+		"gym_id": 1,
+		"user_id": 1,
+		"date": "01-02-2023",
+		"text": "Отличный зал"
+	},
+	{
+		"gym_id": 2,
+		"user_id": 3,
+		"date": "02-01-2024",
+		"text": "Все понравилось!"
+	},
+	{
+		"gym_id": 3,
+		"user_id": 5,
+		"date": "03-12-2023",
+		"text": "Самый лучший тренажерный зал!"
+	},
+	{
+		"gym_id": 4,
+		"user_id": 10,
+		"date": "15-10-2022",
+		"text": "Лучше бы даже не ходил туда"
+	}
+])
+
+db.gym.insertMany([
+	{
+        "gym_id": 1,
+		"city": "санкт-петербург",
+		"street": "комсомолов",
+		"house": 1,
+		"subway_near": "лесная"
+	},
+	{
+        "gym_id": 2,
+		"city": "санкт-петербург",
+		"street": "кима",
+		"house": 6,
+		"subway_near": "василеостровская"
+	},
+	{
+        "gym_id": 3,
+		"city": "москва",
+		"street": "ленинская",
+		"house": 3,
+		"subway_near": "зеленая"
+	},
+	{
+        "gym_id": 4,
+		"city": "москва",
+		"street": "смоленская",
+		"house": 10,
+		"subway_near": "девяткино"
+	},
+	{
+        "gym_id": 5,
+		"city": "москва",
+		"street": "ростовская",
+		"house": 21,
+		"subway_near": "кубчино"
+	},
+	{
+        "gym_id": 6,
+		"city": "томск",
+		"street": "моховая",
+		"house": 4,
+		"subway_near": "первое"
+	},
+	{
+        "gym_id": 7,
+		"city": "томск",
+		"street": "кузнецкий мост",
+		"house": 90,
+		"subway_near": "второе"
+	},
+	{
+        "gym_id": 8,
+		"city": "новгород",
+		"street": "неглинная",
+		"house": 11,
+		"subway_near": "старое"
+	},
+	{
+        "gym_id": 9,
+		"city": "новгород",
+		"street": "трубная",
+		"house": 7,
+		"subway_near": "новое"
+	},
+	{
+        "gym_id": 10,
+		"city": "новгород",
+		"street": "олимпийская",
+		"house": 9,
+		"subway_near": "владимир"
+	}
+])
+
+db.gym.createIndex(
+    {
+        "city": 1,
+        "street": 1
+    }
+)
+
+db.createView(
+    "gymView",
+    "gym",
+    [
+        {
+            $lookup: {
+                from: "workers",
+                localField: "gym_id",
+                foreignField: "gym_id",
+                as: "joined_workers"
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                "joined_workers.salary": 1,
+                "joined_workers.name": 1,
+                "city": 1
+            }
+        },
+        {
+            $unwind: "$joined_workers"
+        }
+    ]
+)

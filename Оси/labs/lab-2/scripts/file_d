@@ -1,0 +1,5 @@
+ProcessID=1:Parent_ProcessID=0:Average_Running_Time=.09710738636363636363
+ProcessID=9:Parent_ProcessID=0:Average_Running_Time=.04735219012115563839
+Average_Running_Children_of_ParentID=0 is .07222978824239600101
+ProcessID=330:Parent_ProcessID=9:Average_Running_Time=.06226129032258064516
+Average_Running_Children_of_ParentID=9 is .06226129032258064516

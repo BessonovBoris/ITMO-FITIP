@@ -1,0 +1,67 @@
+#!/bin/bash
+
+File=$(ls ~/user | grep -E "^Backup-[0-9]{4}-[0-9]{2}-[0-9]{2}" | sort | tail -n 1)
+FileDate=${File:7:${#File}-7}
+
+Date=$(date +"%y-%m-%d")
+
+DateSec=$(date --date=$Date +"%s")
+FileDateSec=$(date --date=$FileDate +"%s")
+
+DeltaSec=$(echo "$DateSec"-"$FileDateSec" | bc)
+DeltaDay=$(echo "$DeltaSec""/(24*60*60)" | bc)
+
+if [[ "$DeltaDay" -ge 7 ]]
+then
+	Name="Backup-$Date"
+
+	mkdir "$Name"
+	for line in $(ls ~/user/source/)
+	do
+		cp "~/user/source/$line" "~/user/$Name"
+	done
+
+	echo -e "Create ~/user/$Name\nFile added: $(ls ~/user/$Name)" >> ~/user/backup-report
+else
+	touch ".create.lst"
+	touch ".update.lst"
+
+	Name="$File"
+	for line in $(ls ~/user/source)
+	do
+		if [[ ! -f "~/$Name/$line" ]]
+		then
+			cp "~/source/$line" "~/$Name"
+			echo "$line" >> ".create.lst"
+		else
+			sizeOld=$(wc -c "~/user/$Name/$line" | awk '{print $1}')
+			sizeNew=$(wc -c "~/user/source/$line" | awk '{print $1}')
+
+			if [[ $sizeOld -ne $sizeNew ]]
+			then
+				mv "~/user/$Name/$line" "~/user/$Name/$line.$Date"
+				echo "$line $line.$Date" >> ".update.lst"
+				cp "~/source/$line" "~/user/$Name"
+			fi
+		fi
+	done
+
+	if [[ ! -s ".create.lst" ]] && [[ ! -s ".update.lst" ]]
+	then
+		echo "No update, No creates" >> "~/user/backup-report"
+		break
+	fi
+
+	if [ -s ".create.lst" [
+	then
+		echo -e "Created:\n$(cat .create.lst)" >> ~/user/backup-report
+	fi
+
+	if [ -s ".update.lst" ]
+	then
+		echo -e "Copied:\n$(cat .update.lst)" >> ~/user/backup-report
+	fi
+
+	rm .create.lst
+	rm .update.lst
+fi

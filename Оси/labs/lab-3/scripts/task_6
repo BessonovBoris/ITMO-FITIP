@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./task_6_handler &
+./task_6_gen

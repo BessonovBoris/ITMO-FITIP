@@ -1,0 +1,21 @@
+#!/bin/bash
+
+maxSize=-1
+pidOfmaxSize=-1
+
+for pid in $(ps -eo pid | tail -n +2)
+do
+	size=-1
+
+	if [[ -d "/proc/$pid" ]]
+	then size=$(cat "/proc/$pid/status" | grep "VmRSS" | grep -o "[0-9]\+")
+	fi
+
+	if [[ "$size" -gt "$maxSize" ]]
+	then
+		maxSize=$size
+		pidOfmaxSize=$pid
+	fi
+done
+
+echo "PID=$pid --- Size=$maxSize"

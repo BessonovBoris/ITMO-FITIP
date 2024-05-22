@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+    postgres:
+        container_name: PostgresDB-5
+        image: postgres:16.2
+        environment:
+            POSTGRES_DB: "FitnessHouse"
+            POSTGRES_USER: "postgresuser"
+            POSTGRES_PASSWORD: "password"
+            PGDATA: "/var/lib/postgresql/data/pgdata"
+        volumes:
+            - ./2. Init Database:/docker-entrypoint-initdb.d
+            - ./db-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        networks:
+            - postgres
+
+    pgadmin:
+        container_name: PGadmin-5
+        image: dpage/pgadmin4:8.5
+        environment:
+            PGADMIN_DEFAULT_EMAIL: "postgres@mail.com"
+            PGADMIN_DEFAULT_PASSWORD: "postgrespassword"
+            PGADMIN_CONFIG_SERVER_MODE: "False"
+        volumes:
+            - ./pgadmin-data:/var/lib/pgadmin
+        ports:
+            - "5050:80"
+        networks:
+            - postgres
+
+volumes:
+    db-data:
+    pgadmin-data:
+
+networks:
+    postgres:
+        driver: bridge
